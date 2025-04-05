@@ -15,8 +15,9 @@ namespace Listify.Infrastructure
     {
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddScoped<ISqlConnectionFactory, SqlConnectionFactory>();
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddSingleton<ISqlConnectionFactory, SqlConnectionFactory>();
+            services.AddTransient<IUnitOfWork, UnitOfWork>();
+            services.AddTransient<ITodoListRepository, TodoListRepository>();
             return services;
         }
     }

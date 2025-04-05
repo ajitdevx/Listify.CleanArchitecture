@@ -18,19 +18,9 @@ namespace Listify.Application.TodoList.Commands.CreateTodoList
                 Title = request.Title,
                 Description = request.Description,
             };
-            await _unitOfWork.BeginTransactionAsync();
 
-            try
-            {
-                var id = await _unitOfWork.TodoLists.AddAsync(entity);
-                await _unitOfWork.CommitTransactionAsync();
-                return id;
-            }
-            catch
-            {
-                await _unitOfWork.RollbackTransactionAsync();
-                throw;
-            }           
+            var id = await _unitOfWork.TodoLists.AddAsync(entity);
+            return id;         
         }
     }
 }

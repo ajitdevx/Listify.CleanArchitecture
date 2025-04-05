@@ -9,93 +9,10 @@ namespace Listify.Infrastructure.Data
 {
     internal class UnitOfWork : IUnitOfWork
     {
-        private readonly ISqlConnectionFactory _sqlConnectionFactory;
-        private IDbConnection? _connection;
-        private IDbTransaction? _transaction;
-        private bool _disposed;
-        private ITodoListRepository? _todoListRepository;
-
-        public UnitOfWork(ISqlConnectionFactory connectionFactory)
+        public UnitOfWork(ITodoListRepository todoListRepository)
         {
-            _sqlConnectionFactory = connectionFactory;
+            TodoLists = todoListRepository;
         }
-
-        public ITodoListRepository TodoLists => _todoListRepository ??=
-            new TodoListRepository(_sqlConnectionFactory, () => _transaction);
-
-        public async Task BeginTransactionAsync()
-        {
-            _connection = _sqlConnectionFactory.CreateConnection();
-            await Task.Run(() => _connection.Open());
-            _transaction = _connection.BeginTransaction();
-        }
-
-        public async Task CommitTransactionAsync()
-        {
-            try
-            {
-                await Task.Run(() => _transaction?.Commit());
-            }
-            catch
-            {
-                await RollbackTransactionAsync();
-                throw;
-            }
-            finally
-            {
-                if (_transaction != null)
-                {
-                    _transaction.Dispose();
-                    _transaction = null;
-                }
-
-                if (_connection != null)
-                {
-                    _connection.Close();
-                    _connection = null;
-                }
-            }
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        public async Task RollbackTransactionAsync()
-        {
-            try
-            {
-                await Task.Run(() => _transaction?.Rollback());
-            }
-            finally
-            {
-                if (_transaction != null)
-                {
-                    _transaction.Dispose();
-                    _transaction = null;
-                }
-
-                if (_connection != null)
-                {
-                    _connection.Close();
-                    _connection = null;
-                }
-            }
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!_disposed)
-            {
-                if (disposing)
-                {
-                    _transaction?.Dispose();
-                    _connection?.Dispose();
-                }
-                _disposed = true;
-            }
-        }
+        public ITodoListRepository TodoLists { get; }
     }
 }

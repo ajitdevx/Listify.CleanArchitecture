@@ -14,21 +14,9 @@ namespace Listify.Infrastructure.Repositories
     internal class TodoListRepository : ITodoListRepository
     {
         private readonly ISqlConnectionFactory _sqlConnectionFactory;
-        private readonly Func<IDbTransaction?> _transactionProvider;
-        public TodoListRepository(ISqlConnectionFactory sqlConnectionFactory, Func<IDbTransaction?> transactionProvider)
+        public TodoListRepository(ISqlConnectionFactory sqlConnectionFactory)
         {
             _sqlConnectionFactory = sqlConnectionFactory;
-            _transactionProvider = transactionProvider;
-        }
-
-        private IDbConnection GetConnection()
-        {
-            var connection = _sqlConnectionFactory.CreateConnection();
-            if (connection.State != ConnectionState.Open)
-            {
-                connection.Open();
-            }
-            return connection;
         }
 
         public async Task<int> AddAsync(TodoListEntity entity)
@@ -38,8 +26,8 @@ namespace Listify.Infrastructure.Repositories
             INSERT INTO TodoLists (Title, Description, CreatedOn, CreatedBy, LastModifiedOn)
             VALUES (@Title, @Description, @CreatedOn, @CreatedBy, @CreatedOn)
             SELECT CAST(SCOPE_IDENTITY() as int)";
-            using var connection = GetConnection();
-            return await connection.ExecuteScalarAsync<int>(sql, entity, transaction: _transactionProvider());
+            using var connection = _sqlConnectionFactory.CreateConnection();
+            return await connection.ExecuteScalarAsync<int>(sql, entity);
         }
 
         public Task DeleteAsync(int id)
