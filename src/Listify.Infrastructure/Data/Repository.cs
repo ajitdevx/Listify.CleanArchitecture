@@ -30,11 +30,11 @@ namespace Listify.Infrastructure.Data
             return await connection.QueryAsync<T>(query);
         }
 
-        public async Task AddAsync(T entity)
+        public async Task<int> AddAsync(T entity)
         {
             var query = $"INSERT INTO {typeof(T).Name}s VALUES (@Entity)";
             using var connection = _sqlConnectionFactory.CreateConnection();
-            await connection.ExecuteAsync(query, new { Entity = entity });
+            return await connection.ExecuteAsync(query, new { Entity = entity });
         }
 
         public async Task UpdateAsync(T entity)

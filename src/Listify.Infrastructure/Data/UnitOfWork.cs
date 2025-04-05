@@ -1,11 +1,13 @@
 ﻿using Listify.Domain.Entities;
 using Listify.Domain.Interfaces;
+using System.Data;
 
 namespace Listify.Infrastructure.Data
 {
     internal class UnitOfWork : IUnitOfWork
     {
         private readonly ISqlConnectionFactory _sqlConnectionFactory;
+        private IDbConnection _connection;
         private readonly IRepository<TodoListEntity> _todoLists;
         private readonly IRepository<TodoItemEntity> _todoItems;
         public UnitOfWork(ISqlConnectionFactory sqlConnectionFactory)
