@@ -1,5 +1,20 @@
-﻿namespace Listify.Web.Endpoints;
+﻿
+using Listify.Application.TodoList.Commands.CreateTodoList;
 
-public class TodoLists
+namespace Listify.Web.Endpoints;
+
+public class TodoLists : EndpointGroupBase
 {
+    public override void Map(WebApplication app)
+    {
+        app
+            .MapGroup(this)
+            .MapPost(AddAsync);
+    }
+
+    public async Task<IResult> AddAsync(ISender sender, CreateTodoListCommand command)
+    {
+        var result = await sender.Send(command);
+        return Results.Ok(result);
+    }
 }
