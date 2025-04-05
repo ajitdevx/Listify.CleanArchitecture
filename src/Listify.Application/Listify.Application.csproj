@@ -13,8 +13,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="TodoList\" />
-    <Folder Include="TodoItem\" />
+    <Folder Include="TodoItem\Commands\" />
+    <Folder Include="TodoItem\Queries\" />
+    <Folder Include="TodoList\Queries\" />
   </ItemGroup>
 
 </Project>
