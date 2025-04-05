@@ -1,32 +1,101 @@
 ﻿using Listify.Domain.Entities;
 using Listify.Domain.Interfaces;
+using Listify.Infrastructure.Repositories;
+using Microsoft.Data.SqlClient;
 using System.Data;
+using System.Data.Common;
 
 namespace Listify.Infrastructure.Data
 {
     internal class UnitOfWork : IUnitOfWork
     {
         private readonly ISqlConnectionFactory _sqlConnectionFactory;
-        private IDbConnection _connection;
-        private readonly IRepository<TodoListEntity> _todoLists;
-        private readonly IRepository<TodoItemEntity> _todoItems;
-        public UnitOfWork(ISqlConnectionFactory sqlConnectionFactory)
-        {
-            _sqlConnectionFactory = sqlConnectionFactory;
-            _todoLists = _todoLists ??= new Repository<TodoListEntity>(_sqlConnectionFactory);
-            _todoItems = _todoItems ??= new Repository<TodoItemEntity>(_sqlConnectionFactory);
-        }
-        public IRepository<TodoListEntity> TodoLists => _todoLists;
-        public IRepository<TodoItemEntity> TodoItems => _todoItems;
+        private IDbConnection? _connection;
+        private IDbTransaction? _transaction;
+        private bool _disposed;
+        private ITodoListRepository? _todoListRepository;
 
-        public Task<int> CompleteAsync()
+        public UnitOfWork(ISqlConnectionFactory connectionFactory)
         {
-            throw new NotImplementedException();
+            _sqlConnectionFactory = connectionFactory;
+        }
+
+        public ITodoListRepository TodoLists => _todoListRepository ??=
+            new TodoListRepository(_sqlConnectionFactory, () => _transaction);
+
+        public async Task BeginAsync()
+        {
+            _connection = _sqlConnectionFactory.CreateConnection();
+            await Task.Run(() => _connection.Open());
+            _transaction = _connection.BeginTransaction();
+        }
+
+        public async Task CommitAsync()
+        {
+            try
+            {
+                await Task.Run(() => _transaction?.Commit());
+            }
+            catch
+            {
+                await RollbackAsync();
+                throw;
+            }
+            finally
+            {
+                if (_transaction != null)
+                {
+                    _transaction.Dispose();
+                    _transaction = null;
+                }
+
+                if (_connection != null)
+                {
+                    _connection.Close();
+                    _connection = null;
+                }
+            }
         }
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        public async Task RollbackAsync()
+        {
+            try
+            {
+                await Task.Run(() => _transaction?.Rollback());
+            }
+            finally
+            {
+                if (_transaction != null)
+                {
+                    _transaction.Dispose();
+                    _transaction = null;
+                }
+
+                if (_connection != null)
+                {
+                    _connection.Close();
+                    _connection = null;
+                }
+            }
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    _transaction?.Dispose();
+                    _connection?.Dispose();
+                }
+                _disposed = true;
+            }
         }
     }
 }
