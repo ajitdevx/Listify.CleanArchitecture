@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace Listify.Domain.Common
 {
-    public abstract class BaseEntity : IEntity
+    public interface IEntity
     {
-        public int Id { get; set; }
     }
 }
