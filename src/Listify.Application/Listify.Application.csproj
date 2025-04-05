@@ -13,9 +13,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Common\Models\" />
     <Folder Include="TodoItem\Commands\" />
     <Folder Include="TodoItem\Queries\" />
     <Folder Include="TodoList\Queries\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Listify.Domain\Listify.Domain.csproj" />
   </ItemGroup>
 
 </Project>

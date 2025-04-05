@@ -11,7 +11,11 @@ namespace Listify.Application.TodoList.Commands.CreateTodoList
     public class CreateTodoListCommand : IRequest<int>
     {
         public string? Title { get; set; }
-
-        public CreateTodoListCommand(string title) => Title = title;
+        public string? Description { get; set; }
+        public CreateTodoListCommand(string title, string description)
+        {
+            Title = title;
+            Description = description;
+        }
     }
 }

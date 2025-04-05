@@ -1,17 +1,36 @@
-﻿using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Listify.Domain.Entities;
+using Listify.Domain.Interfaces;
+using MediatR;
 
 namespace Listify.Application.TodoList.Commands.CreateTodoList
 {
     internal class CreateTodoListCommandHandler : IRequestHandler<CreateTodoListCommand, int>
     {
-        public Task<int> Handle(CreateTodoListCommand request, CancellationToken cancellationToken)
+        private readonly IUnitOfWork _unitOfWork;
+        public CreateTodoListCommandHandler(IUnitOfWork unitOfWork)
         {
-            throw new NotImplementedException();
+            _unitOfWork = unitOfWork;
+        }
+        public async Task<int> Handle(CreateTodoListCommand request, CancellationToken cancellationToken)
+        {
+            var entity = new TodoListEntity
+            {
+                Title = request.Title,
+                Description = request.Description,
+            };
+            await _unitOfWork.BeginTransactionAsync();
+
+            try
+            {
+                var id = await _unitOfWork.TodoLists.AddAsync(entity);
+                await _unitOfWork.CommitTransactionAsync();
+                return id;
+            }
+            catch
+            {
+                await _unitOfWork.RollbackTransactionAsync();
+                throw;
+            }           
         }
     }
 }
