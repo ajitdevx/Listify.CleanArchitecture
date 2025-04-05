@@ -10,8 +10,8 @@ namespace Listify.Domain.Interfaces
     public interface IUnitOfWork : IDisposable
     {
         ITodoListRepository TodoLists { get; }
-        Task BeginAsync();
-        Task CommitAsync();
-        Task RollbackAsync();
+        Task BeginTransactionAsync();
+        Task CommitTransactionAsync();
+        Task RollbackTransactionAsync();
     }
 }

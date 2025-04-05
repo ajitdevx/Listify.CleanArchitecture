@@ -23,14 +23,14 @@ namespace Listify.Infrastructure.Data
         public ITodoListRepository TodoLists => _todoListRepository ??=
             new TodoListRepository(_sqlConnectionFactory, () => _transaction);
 
-        public async Task BeginAsync()
+        public async Task BeginTransactionAsync()
         {
             _connection = _sqlConnectionFactory.CreateConnection();
             await Task.Run(() => _connection.Open());
             _transaction = _connection.BeginTransaction();
         }
 
-        public async Task CommitAsync()
+        public async Task CommitTransactionAsync()
         {
             try
             {
@@ -38,7 +38,7 @@ namespace Listify.Infrastructure.Data
             }
             catch
             {
-                await RollbackAsync();
+                await RollbackTransactionAsync();
                 throw;
             }
             finally
@@ -63,7 +63,7 @@ namespace Listify.Infrastructure.Data
             GC.SuppressFinalize(this);
         }
 
-        public async Task RollbackAsync()
+        public async Task RollbackTransactionAsync()
         {
             try
             {

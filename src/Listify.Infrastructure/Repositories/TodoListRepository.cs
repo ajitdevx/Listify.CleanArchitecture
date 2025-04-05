@@ -21,14 +21,24 @@ namespace Listify.Infrastructure.Repositories
             _transactionProvider = transactionProvider;
         }
 
+        private IDbConnection GetConnection()
+        {
+            var connection = _sqlConnectionFactory.CreateConnection();
+            if (connection.State != ConnectionState.Open)
+            {
+                connection.Open();
+            }
+            return connection;
+        }
+
         public async Task<int> AddAsync(TodoListEntity entity)
         {
             entity.CreatedOn = DateTime.Now;
             const string sql = @"
-            INSERT INTO TodoLists (Title, Description, Colour_Code, CreatedOn, CreatedBy)
-            VALUES (@Title, @Description, @Colour, @CreatedOn, @CreatedBy)
+            INSERT INTO TodoLists (Title, Description, CreatedOn, CreatedBy, LastModifiedOn)
+            VALUES (@Title, @Description, @CreatedOn, @CreatedBy, @CreatedOn)
             SELECT CAST(SCOPE_IDENTITY() as int)";
-            using var connection = _sqlConnectionFactory.CreateConnection();
+            using var connection = GetConnection();
             return await connection.ExecuteScalarAsync<int>(sql, entity, transaction: _transactionProvider());
         }
 

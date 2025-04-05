@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Listify.Domain.Interfaces;
+using Listify.Infrastructure.Data;
+using Listify.Infrastructure.Repositories;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -12,7 +15,8 @@ namespace Listify.Infrastructure
     {
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
         {
-
+            services.AddScoped<ISqlConnectionFactory, SqlConnectionFactory>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             return services;
         }
     }
