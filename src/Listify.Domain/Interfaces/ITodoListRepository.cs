@@ -6,12 +6,8 @@ using System.Threading.Tasks;
 
 namespace Listify.Domain.Interfaces
 {
-    public interface ITodoListRepository
+    public interface ITodoListRepository : IRepository<TodoListEntity>
     {
-        Task<int> AddAsync(TodoListEntity entity);        
-        Task DeleteAsync(int id);
-        Task<IEnumerable<TodoListEntity>> GetAllAsync();
-        Task<TodoListEntity?> GetByIdAsync(int id);
-        Task UpdateAsync(TodoListEntity entity);
+
     }
 }

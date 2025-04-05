@@ -7,11 +7,8 @@ using System.Threading.Tasks;
 
 namespace Listify.Domain.Interfaces
 {
-    public interface IUnitOfWork : IDisposable
+    public interface IUnitOfWork
     {
         ITodoListRepository TodoLists { get; }
-        Task BeginTransactionAsync();
-        Task CommitTransactionAsync();
-        Task RollbackTransactionAsync();
     }
 }
