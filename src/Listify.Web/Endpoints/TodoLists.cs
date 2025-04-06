@@ -12,20 +12,20 @@ public class TodoLists : EndpointGroupBase
     {
         app
             .MapGroup(this)
-            .MapGet(GetByIdAsync, "{id:int}")
-            .MapGet(GetAllAsync)
-            .MapPost(AddAsync)
-            .MapPut(UpdateAsync, "{id:int}")
-            .MapDelete(DeleteAsync, "{id:int}");
+            .MapGet(GetTodoListByIdAsync, "{id:int}")
+            .MapGet(GetAllTodoListAsync)
+            .MapPost(AddTodoListAsync)
+            .MapPut(UpdateTodoListAsync, "{id:int}")
+            .MapDelete(DeleteTodoListAsync, "{id:int}");
     }
 
-    public async Task<IResult> AddAsync(ISender sender, CreateTodoListCommand command)
+    public async Task<IResult> AddTodoListAsync(ISender sender, CreateTodoListCommand command)
     {
         var result = await sender.Send(command);
         return Results.Ok(result);
     }
 
-    public async Task<IResult> UpdateAsync(ISender sender, int id, UpdateTodoListCommand command)
+    public async Task<IResult> UpdateTodoListAsync(ISender sender, int id, UpdateTodoListCommand command)
     {
         if (command == null || string.IsNullOrEmpty(command.Title) || string.IsNullOrEmpty(command.Description)) return Results.BadRequest();
 
@@ -34,18 +34,18 @@ public class TodoLists : EndpointGroupBase
         return Results.Ok();
     }
 
-    public async Task<IResult> DeleteAsync(int id, ISender sender)
+    public async Task<IResult> DeleteTodoListAsync(int id, ISender sender)
     {
         await sender.Send(new DeleteTodoListCommand(id));
         return Results.Ok();
     }
 
-    public async Task<IResult> GetByIdAsync(int id, ISender sender)
+    public async Task<IResult> GetTodoListByIdAsync(int id, ISender sender)
     {
         return Results.Ok(await sender.Send(new GetTodoByIdQuery(id)));
     }
 
-    public async Task<IResult> GetAllAsync(ISender sender)
+    public async Task<IResult> GetAllTodoListAsync(ISender sender)
     {
         return Results.Ok(await sender.Send(new GetTodosQuery()));
     }
