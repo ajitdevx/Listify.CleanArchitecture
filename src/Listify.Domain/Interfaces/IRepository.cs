@@ -12,7 +12,7 @@ namespace Listify.Domain.Interfaces
         Task<T?> GetByIdAsync(int id);
         Task<IEnumerable<T>> GetAllAsync();
         Task<int> AddAsync(T entity);
-        Task UpdateAsync(T entity);
+        Task UpdateAsync(T entity, int id);
         Task DeleteAsync(int id);
     }
 }

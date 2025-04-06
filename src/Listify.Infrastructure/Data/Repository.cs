@@ -37,7 +37,7 @@ namespace Listify.Infrastructure.Data
             return await connection.ExecuteAsync(query, new { Entity = entity });
         }
 
-        public async Task UpdateAsync(T entity)
+        public async Task UpdateAsync(T entity, int id)
         {
             var query = $"UPDATE {typeof(T).Name}s SET @Entity WHERE Id = @Id";
             using var connection = _sqlConnectionFactory.CreateConnection();
