@@ -18,6 +18,7 @@ namespace Listify.Infrastructure
             services.AddSingleton<ISqlConnectionFactory, SqlConnectionFactory>();
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddTransient<ITodoListRepository, TodoListRepository>();
+            services.AddTransient<ITodoItemRepository, TodoItemRepository>();
             return services;
         }
     }

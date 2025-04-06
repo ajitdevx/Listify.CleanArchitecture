@@ -9,10 +9,12 @@ namespace Listify.Infrastructure.Data
 {
     internal class UnitOfWork : IUnitOfWork
     {
-        public UnitOfWork(ITodoListRepository todoListRepository)
+        public UnitOfWork(ITodoListRepository todoListRepository, ITodoItemRepository todoItemRepository)
         {
             TodoLists = todoListRepository;
+            TodoItems = todoItemRepository;
         }
         public ITodoListRepository TodoLists { get; }
+        public ITodoItemRepository TodoItems { get; }
     }
 }
