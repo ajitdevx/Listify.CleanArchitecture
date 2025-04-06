@@ -30,24 +30,33 @@ namespace Listify.Infrastructure.Repositories
             return await connection.ExecuteScalarAsync<int>(sql, entity);
         }
 
-        public Task DeleteAsync(int id)
+        public async Task DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            var sql = "DELETE FROM TodoLists WHERE Id = @Id";
+            using var connection = _sqlConnectionFactory.CreateConnection();
+            await connection.ExecuteAsync(sql, new { id });
         }
 
-        public Task<IEnumerable<TodoListEntity>> GetAllAsync()
+        public async Task<IEnumerable<TodoListEntity>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            var sql = "SELECT Title, Description, CreatedOn, CreatedBy, LastModifiedOn, LastModifiedBy FROM TodoLists";
+            using var connection = _sqlConnectionFactory.CreateConnection();
+            return await connection.QueryAsync<TodoListEntity>(sql);
         }
 
-        public Task<TodoListEntity?> GetByIdAsync(int id)
+        public async Task<TodoListEntity?> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            var sql = "SELECT Title, Description, CreatedOn, CreatedBy, LastModifiedOn, LastModifiedBy FROM TodoLists WHERE Id = @id";
+            using var connection = _sqlConnectionFactory.CreateConnection();
+            return await connection.QuerySingleOrDefaultAsync<TodoListEntity>(sql, new { id });
         }
 
-        public Task UpdateAsync(TodoListEntity entity)
+        public async Task UpdateAsync(TodoListEntity entity, int id)
         {
-            throw new NotImplementedException();
+            entity.LastModifiedOn = DateTime.Now;
+            var sql = @"UPDATE TodoLists SET Title = @Title, Description = @Description, LastModifiedOn = @LastModifiedOn WHERE Id = @Id";
+            using var connection = _sqlConnectionFactory.CreateConnection();
+            await connection.ExecuteAsync(sql, new { entity.Title, entity.Description, entity.LastModifiedOn, id });
         }
     }
 }
